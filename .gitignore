@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+venv
+*.py[cod]
+*$py.class
+mlruns/
+outputs/
+data/test/
+lightning_logs/
+
+# Temporary data
+/checkpoints
+data/qvhighlights_mini/
+/work_dirs
+/.vector_cache
+._*
+
+*~
+*.pyc
+/.idea
+.pytest_cache
+**/__pycache__
+.ipynb_checkpoints
+.env
+*.pt
+**.pth
+*.pts
+**.ckpt
+*.dat
+.vscode
+**.onnx
+**.mkv
+**.mp4
+**.trt
+**.DS_Store
+*.csv
+data
+logs
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

@@ -1,0 +1,6 @@
+data/
+mlruns/
+outputs/
+.vscode/
+venv/
+.dvc/
