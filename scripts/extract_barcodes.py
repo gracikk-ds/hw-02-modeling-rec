@@ -5,6 +5,7 @@ import pandas as pd
 from PIL import Image
 
 
+# pylint: disable=fixme
 def crop_images(
     input_folder: str = "data",
     output_folder: str = "data/barcodes",
