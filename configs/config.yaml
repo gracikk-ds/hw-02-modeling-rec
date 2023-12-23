@@ -1,0 +1,63 @@
+general:
+  project_name: 'BarcodeRecognizer'
+  experiment_name: 'first_run'
+  max_steps: 200
+  dotenv_path: '.env'
+
+hardware:
+  accelerator: 'cpu'
+  precision: 32
+  devices: "auto"
+
+optimizer: 'torch.optim.AdamW'
+optimizer_kwargs:
+  lr: 1e-4
+  weight_decay: 1e-3
+
+scheduler: 'src.utils.schedulers.CosineAnnealingWarmup'
+scheduler_kwargs:
+  min_lr: 1e-6
+  warmup_steps: 20
+  decay_steps: 180
+
+callbacks:
+  monitor_metric: 'val_Accuracy'
+  monitor_mode: 'max'
+  early_stopping_patience: 10
+  progress_bar_refresh_rate: 1
+
+model:
+  encoder_name: "resnet18"
+  num_classes: 14
+  rnn_features_num: 64
+  rnn_hidden_size: 128
+  rnn_num_layers: 2
+
+losses:
+  -
+    name: "CTCLoss"
+    loss_weight: 1
+    loss_fn: "torch.nn.CTCLoss"
+    loss_kwargs:
+      reduction: mean
+
+transforms_settings:
+  preprocessing: True
+  augmentations: True
+  text_size: 13
+  vocab: "0123456789"
+  img_width: 416
+  img_heigth: 96
+  brightness_limit: 0.2
+  contrast_limit: 0.2
+  hue_shift_limit: 20
+  sat_shift_limit: 30
+  val_shift_limit: 20
+  downscale_min: 0.2
+  downscale_max: 0.5
+
+base_data_settings:
+  data_path: "data"
+  train_size: 0.8
+  batch_size: 106
+  num_workers: 0

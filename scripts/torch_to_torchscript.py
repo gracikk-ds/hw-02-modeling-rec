@@ -2,10 +2,10 @@
 import os
 
 import click
-import segmentation_models_pytorch as smp
 import torch
 from omegaconf import DictConfig
 
+from src.models.crnn import CRNN
 from src.settings.config import Config
 
 BATCH_SIZE: int = 1
@@ -102,12 +102,14 @@ def convert_torch_to_scripted(config_path: str, checkpoints_path: str, output_pa
         RuntimeError: outputs of torch and compiled models are mismatch.
     """
     config: DictConfig = Config.from_yaml(config_path)
-    model = smp.create_model(
-        arch=config.model.head_name,
-        encoder_name=config.model.encoder_name,
-        in_channels=config.model.in_channels,
-        classes=config.model.num_classes,
+    model = CRNN(
+        encoder=config.model.encoder_name,
+        num_classes=config.model.num_classes,
+        rnn_hidden_size=config.model.rnn_hidden_size,
+        rnn_num_layers=config.model.rnn_num_layers,
+        rnn_features_num=config.model.rnn_features_num,
     )
+
     model.eval()
     model = load_model_weights(model, checkpoints_path)
     scripted_model = torch.jit.script(model)  # type: ignore

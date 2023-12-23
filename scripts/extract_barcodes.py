@@ -26,13 +26,13 @@ def crop_images(
     df = pd.read_csv(df_path, sep="\t")
 
     for row in df.iterrows():
-        row = row[1]
-        file_path = os.path.join(input_folder, row["filename"])
-        x_from = row["x_from"]
-        y_from = row["y_from"]
-        x_end = x_from + row["width"]
-        y_end = y_from + row["height"]
-        if row["width"] < row["height"]:
+        file_path = os.path.join(input_folder, row[1]["filename"])
+        x_from = row[1]["x_from"]
+        y_from = row[1]["y_from"]
+        x_end = x_from + row[1]["width"]
+        y_end = y_from + row[1]["height"]
+        if row[1]["width"] < row[1]["height"]:
+            df = df.drop([row[0]])
             continue
             # TODO: FIX ALIGNMENT. Also need to fix minor distortions
         crop_box = (x_from, y_from, x_end, y_end)
@@ -40,7 +40,7 @@ def crop_images(
             cropped_img = img.crop(crop_box)
             output_path = os.path.join(output_folder, os.path.basename(file_path))
             cropped_img.save(output_path)
-
+    df.to_csv(os.path.join(input_folder, "annotations_updated.tsv"), sep="\t")
     print("Cropping complete.")
 
 

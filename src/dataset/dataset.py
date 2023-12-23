@@ -1,4 +1,4 @@
-"""Module to define a custom dataset for the Barcode segmentation task."""
+"""Module to define a custom dataset for the ocr task."""
 
 import os
 from typing import Tuple, Union
@@ -61,7 +61,7 @@ class BarcodeDataset(Dataset):  # type: ignore
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return image
 
-    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor, int]:
         """
         Fetch the image and its label based on the provided index.
 
@@ -69,13 +69,19 @@ class BarcodeDataset(Dataset):  # type: ignore
             idx (int): Index of the desired dataset item.
 
         Returns:
-            tuple: A tuple containing the RGB image (np.ndarray) and its labels (np.ndarray).
+            Tuple[Tensor, Tensor, int]: A tuple containing the RGB image (np.ndarray) and its labels (np.ndarray).
         """
         row = self.dataframe.iloc[idx]
         image_path = os.path.join(self.image_folder, row["filename"]).replace("images", "barcodes")
         image = self.load_image(image_path)
-        transformed_image = self.transforms(image=image)
-        return transformed_image, row["code"]
+        text = str(row["code"])
+        data = {
+            "image": image,
+            "text": text,
+            "text_length": len(text),
+        }
+        data = self.transforms(**data)
+        return data["image"], data["text"], data["text_length"]  # type: ignore
 
     def __len__(self) -> int:
         """

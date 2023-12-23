@@ -43,7 +43,7 @@ def split_and_save_datasets(data_path: str, train_size: float) -> None:
         data_path (str): The path to the input CSV file.
         train_size (float): Proportion of the dataset to include in the training split (0.0 to 1.0).
     """
-    dataframe = pd.read_csv(os.path.join(data_path, "annotations.tsv"), sep="\t")
+    dataframe = pd.read_csv(os.path.join(data_path, "annotations_updated.tsv"), sep="\t")
 
     train_data, temp_data = train_test_split(dataframe, train_size=train_size, random_state=RANDOM_STATE)
     val_data, test_data = train_test_split(temp_data, test_size=TEST_VAL_PROPORTION, random_state=RANDOM_STATE)
