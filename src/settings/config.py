@@ -109,13 +109,19 @@ class TransformsConfig(BaseModel):
         text_size (int): Target text size.
         img_width (int): Target img width.
         img_height (int): Target img height.
-        brightness_limit (float): Limit for brightness augmentation.
-        contrast_limit (float): Limit for contrast augmentation.
-        hue_shift_limit (int): Limit for hue shift augmentation.
-        sat_shift_limit (int): Limit for saturation shift augmentation.
-        val_shift_limit (int): Limit for value shift augmentation.
-        downscale_min (float): Min downscale param.
-        downscale_max (float): Max downscale param.
+        crop_persp_prob (float): Probability of applying a perspective transformation through cropping to the images.
+        scalex_prob (float): Probability of scaling the images along the x-axis.
+        rbc_prob (float): Probability of applying random brightness and contrast adjustments.
+        clahe_prob (float): Probability of applying CLAHE for contrast enhancement.
+        blur_limit (float): The maximum extent to which the blur is applied.
+        blur_prob (float): Probability of applying a blur effect to the images.
+        noise_prob (float): Probability of adding Gaussian noise to the images.
+        downscale_min (float): The range for downscaling the image resolution.
+        downscale_max (float): The range for downscaling the image resolution.
+        downscale_prob (float): Probability of applying the downscaling.
+        max_holes (int): The range for the number of holes in the CoarseDropout augmentation.
+        min_holes (int): The range for the number of holes in the CoarseDropout augmentation.
+        coarse_prob (float): Probability of applying CoarseDropout, which randomly removes regions of the image.
     """
 
     preprocessing: bool = True
@@ -124,13 +130,19 @@ class TransformsConfig(BaseModel):
     vocab: str = string.digits
     img_width: int = 416
     img_height: int = 96
-    brightness_limit: float = 0.2
-    contrast_limit: float = 0.2
-    hue_shift_limit: int = 20
-    sat_shift_limit: int = 30
-    val_shift_limit: int = 20
-    downscale_min: float = 0.2
-    downscale_max: float = 0.5
+    crop_persp_prob: float
+    scalex_prob: float
+    rbc_prob: float
+    clahe_prob: float
+    blur_limit: float
+    blur_prob: float
+    noise_prob: float
+    downscale_min: float
+    downscale_max: float
+    downscale_prob: float
+    max_holes: int
+    min_holes: int
+    coarse_prob: float
 
 
 class DataConfig(BaseModel):

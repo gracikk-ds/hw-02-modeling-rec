@@ -244,8 +244,8 @@ def get_transforms(cfg: DictConfig) -> TransformType:
     if augmentations:
         transforms.extend(
             [
-                CropPerspective(),
-                ScaleX(),
+                CropPerspective(cfg.crop_persp_prob),
+                ScaleX(cfg.scalex_prob),
             ],
         )
 
@@ -261,18 +261,12 @@ def get_transforms(cfg: DictConfig) -> TransformType:
     if augmentations:
         transforms.extend(
             [
-                albu.GaussianBlur(),
-                albu.CLAHE(),
-                albu.HueSaturationValue(
-                    hue_shift_limit=cfg.hue_shift_limit,
-                    sat_shift_limit=cfg.sat_shift_limit,
-                    val_shift_limit=cfg.val_shift_limit,
-                ),
-                albu.RandomBrightnessContrast(
-                    brightness_limit=cfg.brightness_limit,
-                    contrast_limit=cfg.contrast_limit,
-                ),
-                albu.Downscale(scale_min=cfg.downscale_min, scale_max=cfg.downscale_max),
+                albu.RandomBrightnessContrast(p=cfg.rbc_prob),
+                albu.CLAHE(cfg.clahe_prob),
+                albu.Blur(blur_limit=cfg.blur_limit, p=cfg.blur_prob),
+                albu.GaussNoise(p=cfg.noise_prob),
+                albu.Downscale(scale_min=cfg.downscale_min, scale_max=cfg.downscale_max, p=cfg.downscale_prob),
+                albu.CoarseDropout(max_holes=cfg.max_holes, min_holes=cfg.min_holes, p=cfg.coarse_prob),
             ],
         )
 

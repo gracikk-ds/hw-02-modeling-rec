@@ -1,35 +1,35 @@
 general:
   project_name: 'BarcodeRecognizer'
   experiment_name: 'first_run'
-  max_steps: 200
+  max_steps: 1300
   dotenv_path: '.env'
 
 hardware:
-  accelerator: 'cpu'
+  accelerator: 'gpu'
   precision: 32
-  devices: "auto"
+  devices: [0, 1]
 
 optimizer: 'torch.optim.AdamW'
 optimizer_kwargs:
-  lr: 1e-4
-  weight_decay: 1e-3
+  lr: 1e-3
+  weight_decay: 1e-5
 
 scheduler: 'src.utils.schedulers.CosineAnnealingWarmup'
 scheduler_kwargs:
-  min_lr: 1e-6
-  warmup_steps: 20
-  decay_steps: 180
+  min_lr: 1e-5
+  warmup_steps: 300
+  decay_steps: 1000
 
 callbacks:
-  monitor_metric: 'val_Accuracy'
+  monitor_metric: 'val_string_match'
   monitor_mode: 'max'
-  early_stopping_patience: 10
+  early_stopping_patience: 250
   progress_bar_refresh_rate: 1
 
 model:
   encoder_name: "resnet18"
-  num_classes: 14
-  rnn_features_num: 64
+  num_classes: 11
+  rnn_features_num: 48
   rnn_hidden_size: 128
   rnn_num_layers: 2
 
@@ -40,6 +40,8 @@ losses:
     loss_fn: "torch.nn.CTCLoss"
     loss_kwargs:
       reduction: mean
+      blank: 0
+      zero_infinity: True
 
 transforms_settings:
   preprocessing: True
@@ -48,16 +50,22 @@ transforms_settings:
   vocab: "0123456789"
   img_width: 416
   img_heigth: 96
-  brightness_limit: 0.2
-  contrast_limit: 0.2
-  hue_shift_limit: 20
-  sat_shift_limit: 30
-  val_shift_limit: 20
-  downscale_min: 0.2
-  downscale_max: 0.5
+  crop_persp_prob: 0.8
+  scalex_prob: 0.8
+  rbc_prob: 1
+  clahe_prob: 0.5
+  blur_limit: 3
+  blur_prob: 0.3
+  noise_prob: 0.3
+  downscale_min: 0.3
+  downscale_max: 0.7
+  downscale_prob: 0.5
+  max_holes: 10
+  min_holes: 5
+  coarse_prob: 0.3
 
 base_data_settings:
   data_path: "data"
   train_size: 0.8
   batch_size: 106
-  num_workers: 0
+  num_workers: 20

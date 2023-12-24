@@ -2,7 +2,7 @@
 import timm
 from torch import Tensor, nn
 
-RNN_FEATURES_DIM: int = 768
+RNN_FEATURES_DIM: int = 576
 
 
 class CRNN(nn.Module):
@@ -10,13 +10,7 @@ class CRNN(nn.Module):
     A Convolutional Recurrent Neural Network (CRNN) for Optical Character Recognition (OCR).
 
     This model uses a CNN backbone from the 'timm' library for feature extraction,
-    followed by an LSTM for sequence modeling, and a fully connected layer for character classification.
-
-    Attributes:
-        backbone (nn.Module): Feature extractor using ResNet34 from 'timm'.
-        num_channels (int): Number of output channels from the feature extractor.
-        lstm (nn.LSTM): LSTM module for sequence modeling.
-        fc (nn.Linear): Fully connected layer for character classification.
+    followed by an RNN for sequence modeling, and a fully connected layer for character classification.
     """
 
     def __init__(
@@ -40,6 +34,12 @@ class CRNN(nn.Module):
         """
         super().__init__()
 
+        print("num_classes:", num_classes)
+        print("rnn_hidden_size:", rnn_hidden_size)
+        print("rnn_num_layers:", rnn_num_layers)
+        print("rnn_dropout:", rnn_dropout)
+        print("rnn_features_num:", rnn_features_num)
+
         self.backbone = timm.create_model(encoder, pretrained=True, features_only=True, out_indices=(2,))
         backbone_output_dim = self.backbone.feature_info.info[2]["num_chs"]  # noqa: WPS219
         self.gate = nn.Conv2d(backbone_output_dim, rnn_features_num, kernel_size=1, bias=False)
@@ -50,7 +50,7 @@ class CRNN(nn.Module):
             hidden_size=rnn_hidden_size,
             dropout=rnn_dropout,
             bidirectional=True,
-            batch_first=True,
+            batch_first=False,
             num_layers=rnn_num_layers,
         )
 
@@ -68,18 +68,18 @@ class CRNN(nn.Module):
         Returns:
             Tensor: Output tensor of shape [batch, timesteps, num_classes].
         """
-        # Feature extraction through ResNet34
+        # Feature extraction through ResNet18
         features = self.backbone(image)[0]
         features = self.gate(features)
-        features = features.permute(0, 3, 1, 2)
+
         # Reshape for LSTM
-        batch, width, channels, height = features.size()
-        features = features.view(batch, width, channels * height)
+        features = features.permute(3, 0, 2, 1)
+        width, batch, height, channels = features.shape
+        features = features.reshape(width, batch, height * channels)
 
         # Sequence modeling through LSTM
         recurrent, _ = self.rnn(features)
 
         # Character classification
         output = self.fc(recurrent)
-
-        return self.softmax(output).transpose(0, 1)
+        return self.softmax(output)

@@ -140,6 +140,7 @@ class BarcodeRunner(pl.LightningModule):
             Optional[torch.Tensor]: Computed total loss for train step.
         """
         images, targets, target_length = batch
+
         log_probs = self(images)
         input_lengths = torch.full(
             size=(images.size(0),),
