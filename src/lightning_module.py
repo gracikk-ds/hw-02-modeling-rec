@@ -51,6 +51,7 @@ class BarcodeRunner(pl.LightningModule):
         self.model = CRNN(
             encoder=self.config.model.encoder_name,
             num_classes=self.config.model.num_classes,
+            rnn_features_dim=self.config.model.rnn_features_dim,
             rnn_hidden_size=self.config.model.rnn_hidden_size,
             rnn_num_layers=self.config.model.rnn_num_layers,
             rnn_features_num=self.config.model.rnn_features_num,

@@ -8,10 +8,6 @@ from omegaconf import DictConfig
 from src.models.crnn import CRNN
 from src.settings.config import Config
 
-BATCH_SIZE: int = 1
-CHANNELS: int = 100
-IMG_DIM: int = 256
-
 
 def extract_value_from_string(string: str) -> float:
     """
@@ -90,13 +86,26 @@ def load_model_weights(model, checkpoint_path: str):
 @click.option("--config_path", type=str, default="configs/config.yaml")
 @click.option("--checkpoints_path", type=str, default="experiments/")
 @click.option("--output_path", type=str, default="weights/seg_model.pt")
-def convert_torch_to_scripted(config_path: str, checkpoints_path: str, output_path: str):
+@click.option("--batch_size", type=int)
+@click.option("--channels", type=int)
+@click.option("--img_dim", type=int)
+def convert_torch_to_scripted(
+    config_path: str,
+    checkpoints_path: str,
+    output_path: str,
+    batch_size: int,
+    channels: int,
+    img_dim: int,
+):
     """Convert torch to scripted module.
 
     Args:
         config_path (str): path to cfg file.
         checkpoints_path (str): path to model checkpoint's dir or checkpoint itself.
         output_path (str): path to save model.
+        batch_size (int): batch size for model input.
+        channels (int): number of channels for model input.
+        img_dim (int): image dimension for model input.
 
     Raises:
         RuntimeError: outputs of torch and compiled models are mismatch.
@@ -114,7 +123,7 @@ def convert_torch_to_scripted(config_path: str, checkpoints_path: str, output_pa
     model = load_model_weights(model, checkpoints_path)
     scripted_model = torch.jit.script(model)  # type: ignore
 
-    check_tensor = torch.randn(BATCH_SIZE, CHANNELS, IMG_DIM, IMG_DIM)
+    check_tensor = torch.randn(batch_size, channels, img_dim, img_dim)
 
     with torch.no_grad():
         torch_output = model(check_tensor)

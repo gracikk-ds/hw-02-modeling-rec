@@ -22,13 +22,17 @@ class GeneralSettings(BaseModel):
     Attributes:
         project_name (str): Name of the project.
         experiment_name (str): Name of the experiment.
+        num_sanity_val_steps (int): Number of validation steps for sanity check (e.g., 1).
         max_steps (int): Number of training steps.
+        seed (int): Random seed.
         dotenv_path (str): dotenv path.
     """
 
     project_name: str
     experiment_name: str
+    num_sanity_val_steps: int
     max_steps: int
+    seed: int
     dotenv_path: str = ".env"
 
 
@@ -39,6 +43,7 @@ class ModelConfig(BaseModel):
     Attributes:
         encoder_name (str): Name of the encoder to use.
         num_classes (int): Number of classes.
+        rnn_features_dim (int): Input rnn features.
         rnn_features_num (int): Input rnn features.
         rnn_hidden_size (int): hidden size of the rnn model.
         rnn_num_layers (int): number of lstm layers to use.
@@ -46,6 +51,7 @@ class ModelConfig(BaseModel):
 
     encoder_name: str
     num_classes: int
+    rnn_features_dim: int
     rnn_features_num: int
     rnn_hidden_size: int
     rnn_num_layers: int
@@ -154,12 +160,14 @@ class DataConfig(BaseModel):
         batch_size (int): Number of samples per batch.
         num_workers (int): Number of worker processes for data loading.
         train_size (float): Proportion of the dataset used for training.
+        seed (int): Random seed.
     """
 
     data_path: str
     batch_size: int
     num_workers: Optional[int]
     train_size: float
+    seed: int
 
 
 class Config(BaseModel):

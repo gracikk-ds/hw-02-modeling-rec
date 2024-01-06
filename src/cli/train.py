@@ -27,14 +27,19 @@ from clearml import Task
 from dotenv import load_dotenv
 from omegaconf import DictConfig
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import Callback, EarlyStopping, LearningRateMonitor, ModelCheckpoint, TQDMProgressBar
+from pytorch_lightning.callbacks import (
+    Callback,
+    EarlyStopping,
+    LearningRateMonitor,
+    ModelCheckpoint,
+    TQDMProgressBar,
+)
 
 from src.datamodule import BarcodeDataModule
 from src.lightning_module import BarcodeRunner
 from src.settings.config import Config
 from src.utils.reproducibility import git_status
 
-SEED: int = 157
 PROJECT_PATH: str = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.."),
 )
@@ -83,7 +88,7 @@ def setup_callback(config: DictConfig) -> List[Callback]:
         dirpath=experiment_save_path,
         filename=f"epoch_{{epoch:02d}}-{{{config.callbacks.monitor_metric}:.3f}}",
         monitor=config.callbacks.monitor_metric,
-        save_top_k=5,
+        save_top_k=config.general.num_sanity_val_steps,
         mode=config.callbacks.monitor_mode,
         save_weights_only=False,
     )
@@ -146,7 +151,7 @@ def train(
         the best checkpoint after the training phase is complete.
     """
     # Set reproducibility
-    pl.seed_everything(SEED, workers=True)
+    pl.seed_everything(config.general.seed, workers=True)
 
     datamodule = BarcodeDataModule(config.base_data_settings, config.transforms_settings)
     model = BarcodeRunner(config)

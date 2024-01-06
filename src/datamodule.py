@@ -55,7 +55,7 @@ class BarcodeDataModule(LightningDataModule):
 
     def prepare_data(self):
         """Prepare and split the datasets for train, validation, and test."""
-        split_and_save_datasets(self.config.data_path, self.config.train_size)
+        split_and_save_datasets(self.config.data_path, self.config.train_size, self.config.seed)
 
     def get_dataset(self, dataset_cl: Type[BarcodeDataset], segment: Segment) -> BarcodeDataset:
         """

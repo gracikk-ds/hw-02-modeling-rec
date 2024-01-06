@@ -1,7 +1,9 @@
 general:
   project_name: 'BarcodeRecognizer'
   experiment_name: 'first_run'
+  num_sanity_val_steps: 5
   max_steps: 1300
+  seed: 42
   dotenv_path: '.env'
 
 hardware:
@@ -29,6 +31,7 @@ callbacks:
 model:
   encoder_name: "resnet18"
   num_classes: 11
+  rnn_features_dim: 576
   rnn_features_num: 48
   rnn_hidden_size: 128
   rnn_num_layers: 2
@@ -69,3 +72,4 @@ base_data_settings:
   train_size: 0.8
   batch_size: 106
   num_workers: 20
+  seed: 42

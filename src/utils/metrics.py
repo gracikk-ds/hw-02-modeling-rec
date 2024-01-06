@@ -55,7 +55,7 @@ class StringMatchMetric(Metric):
         )
 
     @staticmethod
-    def _process_sequence(seq: np.ndarray) -> list:
+    def process_sequence(seq: np.ndarray) -> list:
         """
         Process a sequence by removing consecutive duplicates and filtering out zeros.
 
@@ -90,12 +90,12 @@ class StringMatchMetric(Metric):
             float: The proportion of sequences in the batch that match exactly, as a float.
         """
         preds = preds.permute(1, 0, 2)
-        preds = torch.Tensor.argmax(preds, dim=2)
+        preds = torch.argmax(preds, dim=2)
         preds = preds.detach().cpu().numpy()
 
         targets = targets.detach().cpu().numpy()
 
-        processed_preds = [self._process_sequence(seq) for seq in preds]
+        processed_preds = [self.process_sequence(seq) for seq in preds]
         processed_targets = [[element for element in seq if element != 0] for seq in targets]
         valid_matches = sum(
             float(np.array_equal(pred, target)) for pred, target in zip(processed_preds, processed_targets)
@@ -151,7 +151,7 @@ class EditDistanceMetric(Metric):
         )
 
     @staticmethod
-    def _process_sequence(seq: np.ndarray):
+    def process_sequence(seq: np.ndarray):
         """
         Process a sequence by removing consecutive duplicates and filtering out zeros.
 
@@ -180,7 +180,7 @@ class EditDistanceMetric(Metric):
 
         targets = targets.detach().cpu().numpy()
 
-        processed_preds = [self._process_sequence(seq) for seq in preds]
+        processed_preds = [self.process_sequence(seq) for seq in preds]
         processed_targets = [[element for element in seq if element != 0] for seq in targets]
 
         total_distance = 0
